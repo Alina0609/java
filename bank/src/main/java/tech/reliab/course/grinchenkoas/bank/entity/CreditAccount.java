@@ -1,10 +1,13 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import tech.reliab.course.grinchenkoas.bank.entity.common.Account;
 
 import java.time.LocalDate;
 
-
+@Getter
+@Setter
 public class CreditAccount extends Account {
     private LocalDate startDate;
     private LocalDate endDate;
@@ -44,70 +47,5 @@ public class CreditAccount extends Account {
                 "\nId платёжного счёта: " + paymentAccount.getId().toString()+
                 "\n";
         return str;
-    }
-
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public Integer getCountMonth() {
-        return countMonth;
-    }
-
-    public void setCountMonth(Integer countMonth) {
-        this.countMonth = countMonth;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
-
-    public Double getMountsPayment() {
-        return mountsPayment;
-    }
-
-    public void setMountsPayment(Double mountsPayment) {
-        this.mountsPayment = mountsPayment;
-    }
-
-    public Double getInterestRate() {
-        return interestRate;
-    }
-
-    public void setInterestRate(Double interestRate) {
-        this.interestRate = interestRate;
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-
-    public PaymentAccount getPaymentAccount() {
-        return paymentAccount;
-    }
-
-    public void setPaymentAccount(PaymentAccount paymentAccount) {
-        this.paymentAccount = paymentAccount;
     }
 }

@@ -1,8 +1,12 @@
 package tech.reliab.course.grinchenkoas.bank.entity.common;
 
+import lombok.Getter;
+import lombok.Setter;
 import tech.reliab.course.grinchenkoas.bank.entity.Bank;
 import tech.reliab.course.grinchenkoas.bank.entity.User;
 
+@Getter
+@Setter
 abstract public class Account {
     protected Integer id;
     protected User user;
@@ -11,32 +15,6 @@ abstract public class Account {
     public Account(Integer id, User user, Bank bank){
         this.id = id;
         this.user = user;
-        this.bank = bank;
-    }
-
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Bank getBank() {
-        return bank;
-    }
-
-    public void setBank(Bank bank) {
         this.bank = bank;
     }
 }

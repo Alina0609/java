@@ -1,7 +1,11 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import tech.reliab.course.grinchenkoas.bank.utils.StatusATM;
 
+@Getter
+@Setter
 public class BankATM {
     private Integer id;
     private String name;
@@ -60,86 +64,5 @@ public class BankATM {
         str += "\nДенежная сумма: " + String.format("%.2f",money) +
                 "\nСтоимость обслуживания: " + String.format("%.2f",maintenanceCost);
         return str;
-    }
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public BankOffice getBankOffice() {
-        return bankOffice;
-    }
-
-    public void setBankOffice(BankOffice bankOffice) {
-        this.bankOffice = bankOffice;
-    }
-
-    public StatusATM getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusATM status) {
-        this.status = status;
-    }
-
-    public Bank getBank() {
-        return bank;
-    }
-
-    public void setBank(Bank bank) {
-        this.bank = bank;
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-
-    public Boolean getCanPayMoney() {
-        return canPayMoney;
-    }
-
-    public void setCanPayMoney(Boolean canPayMoney) {
-        this.canPayMoney = canPayMoney;
-    }
-
-    public Boolean getCanDepositMoney() {
-        return canDepositMoney;
-    }
-
-    public void setCanDepositMoney(Boolean canDepositMoney) {
-        this.canDepositMoney = canDepositMoney;
-    }
-
-    public Double getMoney() {
-        return money;
-    }
-
-    public void setMoney(Double money) {
-        this.money = money;
-    }
-
-    public Double getMaintenanceCost() {
-        return maintenanceCost;
-    }
-
-    public void setMaintenanceCost(Double maintenanceCost) {
-        this.maintenanceCost = maintenanceCost;
     }
 }

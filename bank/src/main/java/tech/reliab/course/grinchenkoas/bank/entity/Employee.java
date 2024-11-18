@@ -1,9 +1,13 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import tech.reliab.course.grinchenkoas.bank.entity.common.Person;
 
 import java.util.Date;
 
+@Getter
+@Setter
 public class Employee extends Person {
     private String job;
     private Bank bank;
@@ -49,61 +53,5 @@ public class Employee extends Person {
         str += "\nЗарплата: " + String.format("%.2f", salary);
 
         return str;
-    }
-
-    public String getJob() {
-        return job;
-    }
-
-    public void setJob(String job) {
-        this.job = job;
-    }
-
-    public Bank getBank() {
-        return bank;
-    }
-
-    public void setBank(Bank bank) {
-        this.bank = bank;
-    }
-
-    public Boolean getDistantWork() {
-        return distantWork;
-    }
-
-    public void setDistantWork(Boolean distantWork) {
-        this.distantWork = distantWork;
-    }
-
-    public BankOffice getBankOffice() {
-        return bankOffice;
-    }
-
-    public void setBankOffice(BankOffice bankOffice) {
-        this.bankOffice = bankOffice;
-    }
-
-    public Boolean getCanLend() {
-        return canLend;
-    }
-
-    public void setCanLend(Boolean canLend) {
-        this.canLend = canLend;
-    }
-
-    public Double getSalary() {
-        return salary;
-    }
-
-    public void setSalary(Double salary) {
-        this.salary = salary;
-    }
-
-    public BankATM getBankATM() {
-        return bankATM;
-    }
-
-    public void setBankATM(BankATM bankATM) {
-        this.bankATM = bankATM;
     }
 }

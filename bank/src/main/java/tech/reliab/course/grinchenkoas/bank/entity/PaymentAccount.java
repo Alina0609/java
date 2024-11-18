@@ -1,7 +1,11 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import tech.reliab.course.grinchenkoas.bank.entity.common.Account;
 
+@Getter
+@Setter
 public class PaymentAccount extends Account {
    private Double sum;
 
@@ -18,13 +22,5 @@ public class PaymentAccount extends Account {
                 "\nСумма денег: " + String.format("%.2f",sum) +
                 "\n";
         return str;
-    }
-
-    public Double getSum() {
-        return sum;
-    }
-
-    public void setSum(Double sum) {
-        this.sum = sum;
     }
 }

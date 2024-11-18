@@ -1,8 +1,13 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Random;
 
+@Getter
+@Setter
 public class Bank {
     private Integer id;
     private String name;
@@ -39,88 +44,16 @@ public class Bank {
                 "\nПроцентная ставка: " + String.format("%.2f",interestRate);
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public Double getMoney() {
-        return money;
-    }
-
-    public void setMoney(Double money) {
-        this.money = money;
-    }
-
-    public Double getInterestRate() {
-        return interestRate;
-    }
-
-    public void setInterestRate(Double interestRate) {
-        this.interestRate = interestRate;
-    }
-
-    public ArrayList<BankOffice> getBankOffices() {
-        return bankOffices;
-    }
-
-    public void setBankOffices(ArrayList<BankOffice> bankOffices) {
-        this.bankOffices = bankOffices;
-    }
-
     public void addBankOffice(BankOffice bankOffice) {
         this.bankOffices.add(bankOffice);
-    }
-
-    public ArrayList<BankATM> getBankATMS() {
-        return bankATMS;
-    }
-
-    public void setBankATMS(ArrayList<BankATM> bankATMS) {
-        this.bankATMS = bankATMS;
     }
 
     public void addBankATM(BankATM bankATM) {
         this.bankATMS.add(bankATM) ;
     }
 
-    public ArrayList<Employee> getEmployees() {
-        return employees;
-    }
-
-    public void setEmployees(ArrayList<Employee> employees) {
-        this.employees = employees;
-    }
-
     public void addEmployees(Employee employee) {
         this.employees.add(employee);
-    }
-
-    public ArrayList<User> getClients() {
-        return clients;
-    }
-
-    public void setClients(ArrayList<User> clients) {
-        this.clients = clients;
     }
 
     public void addClients(User client) {

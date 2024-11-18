@@ -22,6 +22,6 @@ public interface AtmService {
     /*Включить Банкомат*/
     void turnOnATM(BankATM bankATM);
 
-    /*Выключить Банкомат*/
+    /*Выключить Бакомат*/
     void turnOffATM(BankATM bankATM);
 }

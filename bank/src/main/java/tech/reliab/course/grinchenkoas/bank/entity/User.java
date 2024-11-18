@@ -1,11 +1,15 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import tech.reliab.course.grinchenkoas.bank.entity.common.Person;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
+@Getter
+@Setter
 public class User extends Person {
     private String work;
     private Double monthSalary;
@@ -66,56 +70,4 @@ public class User extends Person {
         str += "\nКредитный рейтинг: " + creditRating;
         return str;
     }
-
-    public String getWork() {
-        return work;
-    }
-
-    public void setWork(String work) {
-        this.work = work;
-    }
-
-    public Double getMonthSalary() {
-        return monthSalary;
-    }
-
-    public void setMonthSalary(Double monthSalary) {
-        this.monthSalary = monthSalary;
-    }
-
-    public ArrayList<Bank> getBanks() {
-        return banks;
-    }
-
-    public void setBanks(ArrayList<Bank> banks) {
-        this.banks = banks;
-    }
-
-
-
-    public Integer getCreditRating() {
-        return creditRating;
-    }
-
-    public void setCreditRating(Integer creditRating) {
-        this.creditRating = creditRating;
-    }
-
-    public ArrayList<CreditAccount> getCreditAccounts() {
-        return creditAccounts;
-    }
-
-    public void setCreditAccounts(ArrayList<CreditAccount> creditAccounts) {
-        this.creditAccounts = creditAccounts;
-    }
-
-    public ArrayList<PaymentAccount> getPaymentAccounts() {
-        return paymentAccounts;
-    }
-
-    public void setPaymentAccounts(ArrayList<PaymentAccount> paymentAccounts) {
-        this.paymentAccounts = paymentAccounts;
-    }
-
-
 }
