@@ -1,21 +1,21 @@
 package tech.reliab.course.grinchenkoas.bank.service;
 
-import tech.reliab.course.grinchenkoas.bank.entity.Bank;
 import tech.reliab.course.grinchenkoas.bank.entity.PaymentAccount;
-import tech.reliab.course.grinchenkoas.bank.entity.User;
+import tech.reliab.course.grinchenkoas.bank.model.PaymentAccountRequest;
+
+import java.util.List;
 
 public interface PaymentAccountService {
-    /*Создание платежного счета*/
 
-    PaymentAccount create(Integer id, User user, Bank bank);
-    /*Добавление суммы денег на платёжный счёт*/
-    void addMoney(PaymentAccount payAcc, Double sumMoney);
+    PaymentAccount createPaymentAccount(PaymentAccountRequest paymentAccountRequest);
 
-    /*Вычитание суммы денег с платёжного счёта*/
-    void subtractMoney(PaymentAccount payAcc, Double sumMoney);
+    PaymentAccount getPaymentAccountById(int id);
 
-    /*Ввести новый платёжный счёт*/
-    void addPayment(Integer id, User user, Bank bank );
+    PaymentAccount getPaymentAccountDtoById(int id);
 
-    void DeletePayment(User user, Bank bank, PaymentAccount paymentAccount);
+    List<PaymentAccount> getAllPaymentAccounts();
+
+    PaymentAccount updatePaymentAccount(int id, int bankId);
+
+    void deletePaymentAccount(int id);
 }

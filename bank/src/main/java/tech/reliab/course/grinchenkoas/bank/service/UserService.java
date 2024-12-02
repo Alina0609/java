@@ -1,18 +1,21 @@
 package tech.reliab.course.grinchenkoas.bank.service;
 
-import tech.reliab.course.grinchenkoas.bank.entity.*;
+import tech.reliab.course.grinchenkoas.bank.entity.User;
+import tech.reliab.course.grinchenkoas.bank.model.UserRequest;
 
-import java.util.Date;
+import java.util.List;
 
 public interface UserService {
-    /*Создание пользователя*/
-    User create(Integer id, String name, String surname, Date birthday, String work);
 
-    /*Смена пользователем работы, а соответственно, и заработной платы, и пересчёт его кредитного рейтинга*/
-    void changeWork(User user, String newWork, Double newMonthSalary);
+    User createUser(UserRequest userRequest);
 
-    /*Вывести информацию о клиенте*/
-    String getInfo(User user);
+    User getUserById(int id);
 
+    User getUserDtoById(int id);
 
+    List<User> getAllUsers();
+
+    User updateUser(int id, String name);
+
+    void deleteUser(int id);
 }

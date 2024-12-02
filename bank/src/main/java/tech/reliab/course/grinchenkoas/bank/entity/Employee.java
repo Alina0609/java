@@ -1,57 +1,85 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tech.reliab.course.grinchenkoas.bank.entity.common.Person;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.List;
 
+@Entity
+@Builder
 @Getter
 @Setter
-public class Employee extends Person {
-    private String job;
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "employees")
+public class Employee {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int id;
+
+    @Column(nullable = false)
+    private String fullName;
+
+    @Column(nullable = false)
+    private LocalDate birthDate;
+
+    @Column(nullable = false)
+    private String position;
+
+    @ManyToOne
     private Bank bank;
-    private Boolean distantWork;
+
+    @Column(nullable = false)
+    private boolean remoteWork;
+
+    @ManyToOne
     private BankOffice bankOffice;
 
-    private BankATM bankATM;
-    private Boolean canLend;
-    private Double salary;
+    @Column(nullable = false)
+    private boolean canIssueLoans;
 
-    public Employee(Integer id, String name, String surname, Date birthday,  String job, Double salary ) {
+    @Column(nullable = false)
+    private double salary;
 
-        super(id,name,surname,birthday);
-        this.bank = null;
-        this.job = job;
+    @OneToMany(mappedBy = "employee")
+    private List<BankAtm> bankAtm;
+
+    public Employee(String fullName, LocalDate birthDate, String position, Bank bank, boolean remoteWork, BankOffice bankOffice, boolean canIssueLoans, double salary) {
+        this.fullName = fullName;
+        this.birthDate = birthDate;
+        this.position = position;
+        this.bank = bank;
+        this.remoteWork = remoteWork;
+        this.bankOffice = bankOffice;
+        this.canIssueLoans = canIssueLoans;
         this.salary = salary;
-        this.distantWork = true;
-        this.canLend = true;
-        this.bankOffice= null;
-        this.bankATM = null;
     }
 
     @Override
     public String toString() {
-        String str =  "\nEmployee \nИмя: " + getFullName() +
-                "\nДата рождения: " + birthday +
-                "\nДолжность: " + job +
-                "\nБанк: " + bank.getName();
-        if (!distantWork){
-            str += "\nРаботает в офисе " + bankOffice.getName();
-
-            if (canLend){
-                str += "\nМожет выдавать кредиты";
-            }
-            else{
-                str += "\nНе Может выдавать кредиты";
-            }
-        }
-        else{
-            str += "\nРаботает удалённо";
-        }
-
-        str += "\nЗарплата: " + String.format("%.2f", salary);
-
-        return str;
+        return "Employee{" +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
+                ", birthDate=" + birthDate +
+                ", position='" + position + '\'' +
+                ", bank=" + bank.getName() +
+                ", remoteWork=" + remoteWork +
+                ", bankOffice=" + (bankOffice != null ? bankOffice.getName() : "None") +
+                ", canIssueLoans=" + canIssueLoans +
+                ", salary=" + salary +
+                '}';
     }
 }

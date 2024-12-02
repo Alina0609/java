@@ -1,60 +1,88 @@
 package tech.reliab.course.grinchenkoas.bank.service.impl;
 
-import tech.reliab.course.grinchenkoas.bank.entity.BankATM;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import tech.reliab.course.grinchenkoas.bank.entity.Employee;
+import tech.reliab.course.grinchenkoas.bank.model.EmployeeRequest;
+import tech.reliab.course.grinchenkoas.bank.repository.EmployeeRepository;
+import tech.reliab.course.grinchenkoas.bank.service.BankOfficeService;
+import tech.reliab.course.grinchenkoas.bank.service.BankService;
 import tech.reliab.course.grinchenkoas.bank.service.EmployeeService;
 
-import java.util.Date;
-import java.util.Objects;
+import java.util.List;
+import java.util.NoSuchElementException;
 
+@Service
+@RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-    @Override
-    public Employee create(Integer id, String name, String surname, Date birthday, String job, Double salary) {
-        return new Employee(id, name, surname, birthday, job, salary);
+    private final EmployeeRepository employeeRepository;
+    private final BankService bankService;
+    private final BankOfficeService bankOfficeService;
+
+    /**
+     * Создание нового сотрудника банка.
+     *
+     * @param employeeRequest информация о сотруднике
+     * @return Созданный сотрудник банка.
+     */
+    public Employee createEmployee(EmployeeRequest employeeRequest) {
+        Employee employee = new Employee(employeeRequest.getFullName(), employeeRequest.getBirthDate(),
+                                         employeeRequest.getPosition(), bankService.getBankById(employeeRequest.getBankId()),
+                                         employeeRequest.isRemoteWork(), bankOfficeService.getBankOfficeById(employeeRequest.getBankOfficeId()),
+                                         employeeRequest.isCanIssueLoans(), employeeRequest.getSalary());
+        return employeeRepository.save(employee);
     }
 
-    @Override
-    public void toDistantWork(Employee employee) {
-        employee.setDistantWork(Boolean.TRUE);
-        permissionForCredit(employee, false);
+    /**
+     * Чтение сотрудника по его идентификатору.
+     *
+     * @param id Идентификатор сотрудника.
+     * @return Сотрудник, если он найден
+     * @throws NoSuchElementException Если сотрудник не найден.
+     */
+    public Employee getEmployeeDtoById(int id) {
+        return getEmployeeById(id);
     }
 
-    @Override
-    public void toOfficeWork(Employee employee) {
-
-        employee.setDistantWork(Boolean.FALSE);
-        permissionForCredit(employee, true);
+    /**
+     * Чтение сотрудника по его идентификатору.
+     *
+     * @param id Идентификатор сотрудника.
+     * @return Сотрудник, если он найден
+     * @throws NoSuchElementException Если сотрудник не найден.
+     */
+    public Employee getEmployeeById(int id) {
+        return employeeRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Employee was not found"));
     }
 
-    @Override
-    public void permissionForCredit(Employee employee, Boolean flag){
-        employee.setCanLend(flag);
-
+    /**
+     * Чтение всех сотрудников.
+     *
+     * @return Список всех сотрудников.
+     */
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
     }
 
-    @Override
-    public void setWorkerToBankomat(BankATM bankATM, Employee employee){
-        if (!Objects.equals(bankATM.getBankOffice(),employee.getBankOffice())){
-            System.out.println("Рабочий и банкомат не находятся в 1 офисе");
-        }
-        else if (Objects.equals(bankATM.getEmployee(),employee))
-            return;
-        else {
-            employee.setBankATM(bankATM);
-            bankATM.setEmployee(employee);
-            AtmServiceImpl atmService = new AtmServiceImpl();
-            atmService.turnOnATM(bankATM);
-        }
+    /**
+     * Обновление информации о сотруднике по его идентификатору.
+     *
+     * @param id   Идентификатор сотрудника.
+     * @param name Новое имя сотрудника.
+     */
+    public Employee updateEmployee(int id, String name) {
+        Employee employee = getEmployeeById(id);
+        employee.setFullName(name);
+        return employeeRepository.save(employee);
     }
 
-    @Override
-    public void removeWorkerFromBankomat(BankATM bankATM, Employee employee){
-        if (!Objects.equals(employee.getBankATM(),bankATM))
-            return;
-        AtmServiceImpl atmService = new AtmServiceImpl();
-        bankATM.setEmployee(null);
-        employee.setBankATM(null);
-        atmService.turnOffATM(bankATM);
+    /**
+     * Удаление сотрудника по его идентификатору.
+     *
+     * @param id Идентификатор сотрудника.
+     */
+    public void deleteEmployee(int id) {
+        employeeRepository.deleteById(id);
     }
 }

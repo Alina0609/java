@@ -1,51 +1,88 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tech.reliab.course.grinchenkoas.bank.entity.common.Account;
 
 import java.time.LocalDate;
 
+@Entity
+@Builder
 @Getter
 @Setter
-public class CreditAccount extends Account {
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "credit_accounts")
+public class CreditAccount {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int id;
+
+    @ManyToOne
+    private User user;
+
+    @ManyToOne
+    private Bank bank;
+
+    @Column(nullable = false)
     private LocalDate startDate;
+
+    @Column(nullable = false)
     private LocalDate endDate;
-    private Integer countMonth;
-    private Double amount;
-    private Double mountsPayment;
 
+    @Column(nullable = false)
+    private int loanTermMonths;
 
-    private Double interestRate;
+    @Column(nullable = false)
+    private double loanAmount;
+
+    @Column(nullable = false)
+    private double monthlyPayment;
+
+    @Column(nullable = false)
+    private double interestRate;
+
+    @ManyToOne
     private Employee employee;
+
+    @ManyToOne
     private PaymentAccount paymentAccount;
 
-    public CreditAccount(Integer id, User user, Bank bank, Employee employee, PaymentAccount paymentAccount,
-                         LocalDate startDate, Integer countMonth, Double amount ) {
-        super(id,user,bank);
+    public CreditAccount(User user, Bank bank, LocalDate startDate, int loanTermMonths, double interestRate, Employee employee, PaymentAccount paymentAccount) {
+        this.user = user;
+        this.bank = bank;
         this.startDate = startDate;
-        this.countMonth = countMonth;
-        this.endDate = startDate.plusMonths(this.countMonth);
-        this.amount = amount;
-        this.interestRate = bank.getInterestRate();
-        this.mountsPayment = (1+ interestRate/100)*amount/countMonth;
+        this.loanTermMonths = loanTermMonths;
+        this.interestRate = interestRate;
         this.employee = employee;
         this.paymentAccount = paymentAccount;
     }
 
     @Override
     public String toString() {
-        String str = "\nCreditAccount \nid: " + id +
-                "\nБанк: " + bank.getName() +
-                "\nПользователь: " + user.getFullName() +
-                "\nКоличество месяцев: " + countMonth +
-                "\nПромежутки: " + startDate.toString() + " - " + endDate.toString() +
-                "\nСумма кредита: " + String.format("%.2f",amount) +
-                "\nПроцентная ставка: " + String.format("%.2f",interestRate) + "%" +
-                "\nЕжемесячный платёж: " + String.format("%.2f",mountsPayment) +
-                "\nСотрудник, который выдал кредит: " + employee.getFullName() +
-                "\nId платёжного счёта: " + paymentAccount.getId().toString()+
-                "\n";
-        return str;
+        return "CreditAccount{" +
+                "id=" + id +
+                ", user=" + user.getFullName() +
+                ", bank=" + bank.getName() +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", loanTermMonths=" + loanTermMonths +
+                ", loanAmount=" + loanAmount +
+                ", monthlyPayment=" + monthlyPayment +
+                ", interestRate=" + interestRate +
+                ", employee=" + (employee != null ? employee.getFullName() : "None") +
+                ", paymentAccountId=" + (paymentAccount != null ? paymentAccount.getId() : "None") +
+                '}';
     }
 }
+

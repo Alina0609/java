@@ -1,62 +1,62 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.List;
 
+@Entity
+@Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "banks")
+@ToString
 public class Bank {
-    private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int id;
+
+    @Column(nullable = false)
     private String name;
-    private ArrayList<BankOffice> bankOffices;
-    private ArrayList<BankATM> bankATMS;
-    private ArrayList<Employee> employees;
-    private ArrayList<User> clients;
-    private Integer rating;
-    private Double money;
-    private Double interestRate;
 
-    public Bank(Integer id, String name) {
-        this.id = id;
+    @Column(nullable = false)
+    private int rating;
+
+    @Column(nullable = false)
+    private double totalMoney;
+
+    @Column(nullable = false)
+    private double interestRate;
+
+    @OneToMany(mappedBy = "bank")
+    private List<BankOffice> offices;
+
+    @OneToMany(mappedBy = "bank")
+    private List<BankAtm> atms;
+
+    @OneToMany(mappedBy = "bank")
+    private List<Employee> employees;
+
+    @OneToMany(mappedBy = "bank")
+    private List<CreditAccount> creditAccounts;
+
+    @OneToMany(mappedBy = "bank")
+    private List<PaymentAccount> paymentAccounts;
+
+    public Bank(String name) {
         this.name = name;
-        this.bankOffices = new ArrayList<>();
-        this.bankATMS = new ArrayList<>();
-        this.employees = new ArrayList<>();
-        this.clients = new ArrayList<>();
-        Random random = new Random();
-        this.rating = random.nextInt(0, 100);
-        this.money = random.nextDouble(0, 1000000000);
-        this.interestRate = 20.0- this.getRating() /5.0;;
-    }
-
-    @Override
-    public String toString(){
-        return "\nBank \nНазвание банка: " + name +
-                "\nКоличество офисов: " + getBankOffices().size() +
-                "\nКоличество банкоматов: " + getBankATMS().size() +
-                "\nКоличество сотрудников: " + getEmployees().size() +
-                "\nКоличество клиентов: " + getClients().size() +
-                "\nРейтинг: " + rating +
-                "\nДенежная сумма: " + String.format("%.2f",money) +
-                "\nПроцентная ставка: " + String.format("%.2f",interestRate);
-    }
-
-    public void addBankOffice(BankOffice bankOffice) {
-        this.bankOffices.add(bankOffice);
-    }
-
-    public void addBankATM(BankATM bankATM) {
-        this.bankATMS.add(bankATM) ;
-    }
-
-    public void addEmployees(Employee employee) {
-        this.employees.add(employee);
-    }
-
-    public void addClients(User client) {
-        this.clients.add(client);
     }
 }

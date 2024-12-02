@@ -1,214 +1,118 @@
 package tech.reliab.course.grinchenkoas.bank.service.impl;
 
-import tech.reliab.course.grinchenkoas.bank.entity.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import tech.reliab.course.grinchenkoas.bank.entity.Bank;
+import tech.reliab.course.grinchenkoas.bank.repository.BankRepository;
 import tech.reliab.course.grinchenkoas.bank.service.BankService;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
+@Service
+@RequiredArgsConstructor
 public class BankServiceImpl implements BankService {
-    @Override
-    public Bank create(Integer id, String name, BankOffice bankOffice, BankATM bankATM, Employee employee, User user) {
-        Bank bank = new Bank(id, name);
-        this.addBankATM(bank, bankATM);
-        this.addEmployee(bank, employee);
-        this.addOffice(bank,  bankOffice);
-        this.addUser(bank, user);
-        return bank;
+
+    private static final int RATING_BOUND = 101;
+    private static final int TOTAL_MONEY_BOUND = 1000001;
+    private static final int MAX_RATE = 20;
+    private static final double DIVIDER = 10.0;
+
+    private final BankRepository bankRepository;
+
+    /**
+     * Создание нового банка.
+     *
+     * @param bankName Название банка.
+     * @return Созданный банк.
+     */
+    public Bank createBank(String bankName) {
+        Bank bank = new Bank(bankName);
+        bank.setRating(generateRating());
+        bank.setTotalMoney(generateTotalMoney());
+        bank.setInterestRate(calculateInterestRate(bank.getRating()));
+        return bankRepository.save(bank);
     }
 
-    @Override
-    public void addMoney(Bank bank, Double sumMoney) {
-        Double sum = bank.getMoney();
-        bank.setMoney(sum + sumMoney);
+    /**
+     * Генерация случайного рейтинга банка.
+     *
+     * @return Случайный рейтинг банка.
+     */
+    private int generateRating() {
+        return new Random().nextInt(RATING_BOUND);
     }
 
-    @Override
-    public void subtractMoney(Bank bank, Double sumMoney) {
-        Double sum = bank.getMoney();
-        if (sumMoney > sum)
-            System.out.println(String.format( "У банка не хватает %.2f денег",sumMoney-sum));
-        else
-            bank.setMoney(sum - sumMoney);
+    /**
+     * Генерация случайного количества денег в банке.
+     *
+     * @return Случайное количество денег в банке.
+     */
+    private double generateTotalMoney() {
+        return new Random().nextInt(TOTAL_MONEY_BOUND);
     }
 
-    @Override
-    public void addBankATM (Bank bank, BankATM bankATM){
-
-        if (bankATM.getBank() != null)
-            System.out.println("Банкомат принадлежит другому банку");
-        else {
-            if (Objects.equals(bankATM.getBank(), bank))
-                return;
-            if (bank.getBankATMS() == null) {
-                ArrayList<BankATM> array = new ArrayList<BankATM>();
-                array.add(bankATM);
-                bank.setBankATMS(array);
-            } else {
-                ArrayList<BankATM> array = bank.getBankATMS();
-                array.add(bankATM);
-                bank.setBankATMS(array);
-            }
-
-            bankATM.setBank(bank);
-        }
+    /**
+     * Вычисление процентной ставки по кредитам.
+     *
+     * @param rating Рейтинг банка.
+     * @return Процентная ставка.
+     */
+    private double calculateInterestRate(int rating) {
+        return MAX_RATE - (rating / DIVIDER);
     }
 
-    @Override
-    public void deleteBankATM(Bank bank, BankATM bankATM){
-
-        if (!Objects.equals(bankATM.getBank(),bank))
-            return;
-        BankOfficeServiceImpl bankOfficeService =new BankOfficeServiceImpl();
-
-        if (bankATM.getBankOffice() != null){
-            ArrayList<BankOffice> bankOffices =bank.getBankOffices();
-            bankOfficeService.deleteATM(bankOffices.get(bankOffices.indexOf(bankATM.getBankOffice())),bankATM);
-            bank.setBankOffices(bankOffices);
-        }
-
-
-        ArrayList<BankATM> bankATMS = bank.getBankATMS();
-        bankATMS.remove(bankATM);
-        if (bankATMS.size() != 0)
-            bank.setBankATMS(bankATMS);
-        else
-            bank.setBankATMS(null);
-        bankATM.setBank(null);
+    /**
+     * Чтение банка по его идентификатору.
+     *
+     * @param id Идентификатор банка.
+     * @return Банк dto, если он найден
+     * @throws NoSuchElementException Если банк не найден.
+     */
+    public Bank getBankDtoById(int id) {
+        return getBankById(id);
     }
 
-    @Override
-    public void addEmployee(Bank bank, Employee employee){
-        if (employee.getBank() != null)
-            System.out.println("Работник работает в другом банке");
-        else {
-
-            if (Objects.equals(employee.getBank(), bank))
-                return;
-            employee.setDistantWork(true);
-            ArrayList<Employee> array;
-            if (bank.getEmployees() == null) {
-                array = new ArrayList<>();
-                array.add(employee);
-            } else {
-                array = bank.getEmployees();
-                array.add(employee);
-            }
-            bank.setEmployees(array);
-            employee.setBank(bank);
-        }
+    /**
+     * Чтение банка по его идентификатору.
+     *
+     * @param id Идентификатор банка.
+     * @return Банк, если он найден
+     * @throws NoSuchElementException Если банк не найден.
+     */
+    public Bank getBankById(int id) {
+        return bankRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Bank was not found"));
     }
 
-    @Override
-    public void deleteEmployee(Bank bank, Employee employee){
-        if (!Objects.equals(employee.getBank(),bank)){
-            return;
-        }
-
-        BankOfficeServiceImpl bankOfficeService =new BankOfficeServiceImpl();
-
-        if (!employee.getDistantWork()){
-            ArrayList<BankOffice> bankOffices =bank.getBankOffices();
-            bankOfficeService.deleteEmployee(bankOffices.get(bankOffices.indexOf(employee.getBankOffice())),employee);
-            bank.setBankOffices(bankOffices);
-        }
-
-        ArrayList<Employee> employees = bank.getEmployees();
-        employees.remove(employee);
-        if (employees.size() != 0)
-            bank.setEmployees(employees);
-        else
-            bank.setEmployees(null);
-        bank.getBankATMS().get(bank.getBankATMS().indexOf(employee.getBankATM())).setEmployee(null);
-        employee.setBankOffice(null);
-        employee.setBankATM(null);
-        employee.setBank(null);
+    /**
+     * Чтение всех банков.
+     *
+     * @return Список всех банков.
+     */
+    public List<Bank> getAllBanks() {
+        return bankRepository.findAll();
     }
 
-    @Override
-    public void addOffice(Bank bank, BankOffice bankOffice){
-        if (bankOffice.getBank() != null)
-            System.out.println("Офис принадлежит другому банку");
-        else {
-            if (Objects.equals(bankOffice.getBank(), bank))
-                return;
-
-            ArrayList<BankOffice> array;
-            if (bank.getBankOffices() == null) {
-                array = new ArrayList<>();
-                array.add(bankOffice);
-            } else {
-                array = bank.getBankOffices();
-                array.add(bankOffice);
-            }
-            bank.setBankOffices(array);
-            bankOffice.setBank(bank);
-        }
+    /**
+     * Обновление информации о банке по его идентификатору.
+     *
+     * @param id   Идентификатор банка.
+     * @param name Новое название банка.
+     */
+    public Bank updateBank(int id, String name) {
+        Bank bank = getBankById(id);
+        bank.setName(name);
+        return bankRepository.save(bank);
     }
 
-    @Override
-    public void deleteOffice(Bank bank, BankOffice bankOffice){
-        if (!Objects.equals(bankOffice.getBank(), bank))
-            return;
-
-        BankOfficeServiceImpl bankOfficeService = new BankOfficeServiceImpl();
-        ArrayList<BankATM> bankATMS = bankOffice.getBankATMS();
-        bankATMS.forEach(bankATM -> {
-            bankOfficeService.deleteATM(bankOffice, bankATM);
-        });
-
-        ArrayList<Employee> employees = bankOffice.getEmployees();
-        employees.forEach(employee -> {
-            bankOfficeService.deleteEmployee(bankOffice, employee);
-        });
-
-        ArrayList<BankOffice> bankOffices = bank.getBankOffices();
-        bankOffices.remove(bankOffice);
-        if (bankOffices.size() == 0)
-            bank.setBankOffices(null);
-        else
-            bank.setBankOffices(bankOffices);
-        bankOffice.setBank(null);
+    /**
+     * Удаление банка по его идентификатору.
+     *
+     * @param id Идентификатор банка.
+     */
+    public void deleteBank(int id) {
+        bankRepository.deleteById(id);
     }
-
-    @Override
-    public void addUser(Bank bank, User user){
-        if (bank.getClients()!= null && bank.getClients().contains(user))
-            return;
-        ArrayList<User> bankArray;
-        if (bank.getClients() == null) {
-            bankArray =new ArrayList<>();
-            bankArray.add(user);
-        }
-        else{
-            bankArray = bank.getClients();
-            bankArray.add(user);
-        }
-        bank.setClients(bankArray);
-
-
-        ArrayList<Bank> userArray;
-        if (user.getBanks() == null) {
-            userArray =new ArrayList<>();
-        }
-        else{
-            userArray = user.getBanks();
-        }
-        userArray.add(bank);
-        user.setBanks(userArray);
-    }
-
-    @Override
-    public void deleteUser(Bank bank, User user){
-
-        ArrayList<User> users = bank.getClients();
-        users.remove(user);
-
-        if (users.size() == 0)
-            bank.setClients(null);
-        else
-            bank.setClients(users);
-
-    }
-
 }

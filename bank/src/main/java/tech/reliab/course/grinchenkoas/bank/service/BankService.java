@@ -1,40 +1,19 @@
 package tech.reliab.course.grinchenkoas.bank.service;
 
-import tech.reliab.course.grinchenkoas.bank.entity.*;
+import tech.reliab.course.grinchenkoas.bank.entity.Bank;
+
+import java.util.List;
 
 public interface BankService {
-    /*Создание банка*/
-    Bank create(Integer id, String name, BankOffice bankOffice, BankATM bankATM, Employee employee, User user);
+    Bank createBank(String bankName);
 
-    /*Добавление суммы денег в банк*/
-    void addMoney(Bank bank, Double sumMoney);
+    Bank getBankById(int id);
 
-    /*Вычитание суммы денег из банка*/
-    void subtractMoney(Bank bank, Double sumMoney);
+    Bank getBankDtoById(int id);
 
-    /*Добавить банкомат банку*/
-    void addBankATM(Bank bank, BankATM bankATM);
+    List<Bank> getAllBanks();
 
-    /*Убрать банкомат у банка. Для этого надо убрать банкомат у соответсвующего
-     *банковского офиса*/
-    void deleteBankATM(Bank bank, BankATM bankATM);
+    Bank updateBank(int id, String name);
 
-    /*Добавить работника*/
-    void addEmployee(Bank bank, Employee employee);
-
-    /*Удалить работника*/
-    void deleteEmployee(Bank bank, Employee employee);
-
-    /*Добавить банковский офис*/
-    void addOffice(Bank bank, BankOffice bankOffice);
-
-    /*Убрать банковский офис*/
-    void deleteOffice(Bank bank, BankOffice bankOffice);
-
-    /*Добавить клиента*/
-    void addUser(Bank bank, User user);
-
-    /*Удалить клиента*/
-    void deleteUser(Bank bank, User user);
-
+    void deleteBank(int id);
 }

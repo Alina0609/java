@@ -1,79 +1,78 @@
 package tech.reliab.course.grinchenkoas.bank.service.impl;
 
-import tech.reliab.course.grinchenkoas.bank.entity.Bank;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import tech.reliab.course.grinchenkoas.bank.entity.PaymentAccount;
-import tech.reliab.course.grinchenkoas.bank.entity.User;
+import tech.reliab.course.grinchenkoas.bank.model.PaymentAccountRequest;
+import tech.reliab.course.grinchenkoas.bank.repository.PaymentAccountRepository;
 import tech.reliab.course.grinchenkoas.bank.service.BankService;
 import tech.reliab.course.grinchenkoas.bank.service.PaymentAccountService;
+import tech.reliab.course.grinchenkoas.bank.service.UserService;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
+import java.util.NoSuchElementException;
 
+@Service
+@RequiredArgsConstructor
 public class PaymentAccountServiceImpl implements PaymentAccountService {
 
-    @Override
-    public PaymentAccount create(Integer id, User user, Bank bank) {
+    private final PaymentAccountRepository paymentAccountRepository;
+    private final UserService userService;
+    private final BankService bankService;
 
-        return new PaymentAccount(id, user, bank);
+    /**
+     * Создание нового платежного аккаунта.
+     *
+     * @param paymentAccountRequest содержит информацию о userId и bankId
+     * @return Созданный платежный аккаунт.
+     */
+    public PaymentAccount createPaymentAccount(PaymentAccountRequest paymentAccountRequest) {
+        PaymentAccount paymentAccount = new PaymentAccount(userService.getUserById(paymentAccountRequest.getUserId()),
+                                                           bankService.getBankById(paymentAccountRequest.getBankId()));
+        return paymentAccountRepository.save(paymentAccount);
     }
 
-    @Override
-    public void addMoney(PaymentAccount payAcc, Double sumMoney) {
-
-        payAcc.setSum(payAcc.getSum() + sumMoney);
+    /**
+     * Чтение платежного аккаунта по его идентификатору.
+     *
+     * @param id Идентификатор платежного аккаунта.
+     * @return Платежный аккаунт
+     * @throws NoSuchElementException Если платежный аккаунт не найден.
+     */
+    public PaymentAccount getPaymentAccountById(int id) {
+        return paymentAccountRepository.findById(id).orElseThrow(() -> new NoSuchElementException("PaymentAccount was not found"));
     }
 
-    @Override
-    public void subtractMoney(PaymentAccount payAcc, Double sumMoney) {
-
-        payAcc.setSum(payAcc.getSum() - sumMoney);
+    public PaymentAccount getPaymentAccountDtoById(int id) {
+        return getPaymentAccountById(id);
+    }
+    /**
+     * Чтение всех платежных аккаунтов.
+     *
+     * @return Список всех платежных аккаунтов.
+     */
+    public List<PaymentAccount> getAllPaymentAccounts() {
+        return paymentAccountRepository.findAll();
     }
 
-    @Override
-    public void addPayment(Integer id, User user, Bank bank ){
-
-        if (user.getPaymentAccounts() != null){
-            for (PaymentAccount paymentAccount: user.getPaymentAccounts())
-            {
-                if (paymentAccount.getBank() == bank)
-                    return;
-            }
-        }
-        PaymentAccount paymentAccount = new PaymentAccount(id, user, bank);
-        ArrayList<PaymentAccount> paymentAccounts;
-        if(user.getPaymentAccounts() == null){
-            paymentAccounts = new ArrayList<>();
-        }
-        else{
-            paymentAccounts = user.getPaymentAccounts();
-        }
-        paymentAccounts.add(paymentAccount);
-        BankService bankService = new BankServiceImpl();
-        bankService.addUser(bank,user);
-        user.setPaymentAccounts(paymentAccounts);
+    /**
+     * Обновление информации о платежном аккаунте по его идентификатору.
+     *
+     * @param id   Идентификатор платежного аккаунта.
+     * @param bankId id банка, в котором открыт аккаунт.
+     */
+    public PaymentAccount updatePaymentAccount(int id, int bankId) {
+        PaymentAccount paymentAccount = getPaymentAccountById(id);
+        paymentAccount.setBank(bankService.getBankById(bankId));
+        return paymentAccountRepository.save(paymentAccount);
     }
 
-    @Override
-    public void DeletePayment(User user, Bank bank, PaymentAccount paymentAccount){
-        if (paymentAccount.getSum() < 0){
-            System.out.println("На счету не погашен долг");
-        }
-        else {
-            ArrayList<PaymentAccount> paymentAccounts = user.getPaymentAccounts();
-            paymentAccounts.remove(paymentAccount);
-            user.setPaymentAccounts(paymentAccounts);
-            boolean flag = false;
-
-            for (PaymentAccount account : paymentAccounts) {
-                if (Objects.equals(account.getBank(), bank)) {
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag) {
-                BankService bankService = new BankServiceImpl();
-                bankService.deleteUser(bank, user);
-            }
-        }
+    /**
+     * Удаление платежного аккаунта по его идентификатору.
+     *
+     * @param id Идентификатор платежного аккаунта.
+     */
+    public void deletePaymentAccount(int id) {
+        paymentAccountRepository.deleteById(id);
     }
 }

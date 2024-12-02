@@ -1,26 +1,54 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import tech.reliab.course.grinchenkoas.bank.entity.common.Account;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Builder
 @Getter
 @Setter
-public class PaymentAccount extends Account {
-   private Double sum;
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "payment_accounts")
+public class PaymentAccount {
 
-    public PaymentAccount(Integer id, User user, Bank bank) {
-        super(id,user,bank);
-        this.sum = 0.0D;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int id;
+
+    @ManyToOne
+    private User user;
+
+    @ManyToOne
+    private Bank bank;
+
+    @Column(nullable = false)
+    private double balance;
+
+    public PaymentAccount(User user, Bank bank) {
+        this.user = user;
+        this.bank = bank;
+        this.balance = 0;
     }
 
     @Override
     public String toString() {
-        String str = "\nPaymentAccount\nid " + id +
-                "\nБанк: " + bank.getName() +
-                "\nПользователь: " + user.getFullName() +
-                "\nСумма денег: " + String.format("%.2f",sum) +
-                "\n";
-        return str;
+        return "PaymentAccount{" +
+                "id=" + id +
+                ", user=" + user.getFullName() +
+                ", bank=" + bank.getName() +
+                ", balance=" + balance +
+                '}';
     }
 }

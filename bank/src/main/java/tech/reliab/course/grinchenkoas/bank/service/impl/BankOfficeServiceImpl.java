@@ -1,117 +1,95 @@
 package tech.reliab.course.grinchenkoas.bank.service.impl;
 
-import tech.reliab.course.grinchenkoas.bank.entity.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import tech.reliab.course.grinchenkoas.bank.entity.Bank;
+import tech.reliab.course.grinchenkoas.bank.entity.BankOffice;
+import tech.reliab.course.grinchenkoas.bank.entity.BankOfficeStatus;
+import tech.reliab.course.grinchenkoas.bank.model.BankOfficeRequest;
+import tech.reliab.course.grinchenkoas.bank.repository.BankOfficeRepository;
 import tech.reliab.course.grinchenkoas.bank.service.BankOfficeService;
+import tech.reliab.course.grinchenkoas.bank.service.BankService;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
+@Service
+@RequiredArgsConstructor
 public class BankOfficeServiceImpl implements BankOfficeService {
 
-    @Override
-    public BankOffice create(Integer id, String name, String address, Boolean status, Double rentCost) {
-        return new BankOffice(id, name, address, status, rentCost);
+    private final BankOfficeRepository bankOfficeRepository;
+    private final BankService bankService;
+
+    /**
+     * Создание нового офиса банка.
+     *
+     * @param bankOfficeRequest содержит данные про офис
+     * @return Созданный офис банка.
+     */
+    public BankOffice createBankOffice(BankOfficeRequest bankOfficeRequest) {
+        Bank bank = bankService.getBankById(bankOfficeRequest.getBankId());
+        BankOffice bankOffice = new BankOffice(bankOfficeRequest.getName(), bankOfficeRequest.getAddress(),
+                                               bankOfficeRequest.isCanPlaceAtm(), bankOfficeRequest.isCanIssueLoan(),
+                                               bankOfficeRequest.isCashWithdrawal(), bankOfficeRequest.isCashDeposit(),
+                                               bankOfficeRequest.getRentCost(), bank);
+        bankOffice.setStatus(BankOfficeStatus.randomStatus());
+        bankOffice.setOfficeMoney(generateOfficeMoney(bank));
+        return bankOfficeRepository.save(bankOffice);
     }
 
-    @Override
-    public void addMoney(BankOffice office, Double sumMoney) {
-        Double sumBank = office.getBank().getMoney();
-        Double sumOffice = office.getMoney();
-        office.setMoney(sumOffice + sumMoney);
-        office.getBank().setMoney(sumBank + sumMoney);
+    /**
+     * Генерация случайного количества денег в офисе банка.
+     *
+     * @param bank Банк, которому принадлежит офис.
+     * @return Случайное количество денег в офисе банка.
+     */
+    private double generateOfficeMoney(Bank bank) {
+        return new Random().nextDouble(bank.getTotalMoney());
     }
 
-    @Override
-    public void subtractMoney(BankOffice office, Double sumMoney) {
-        Double sumBank = office.getBank().getMoney();
-        Double sumOffice = office.getMoney();
-        if (sumOffice < sumMoney)
-            System.out.printf("У банка не хватает %.2f денег%n",sumMoney-sumOffice);
-        else{
-            office.setMoney(sumOffice - sumMoney);
-            office.getBank().setMoney(sumBank - sumMoney);
-        }
+    /**
+     * Поиск офиса банка по его идентификатору.
+     *
+     * @param id Идентификатор офиса банка.
+     * @return Офис банка, если он найден
+     * @throws NoSuchElementException Если офис не найден.
+     */
+    public BankOffice getBankOfficeById(int id) {
+        return bankOfficeRepository.findById(id).orElseThrow(() -> new NoSuchElementException("BankOffice was not found"));
     }
 
-    @Override
-    public void addATM(BankOffice office, BankATM bankATM) {
-
-        if (!office.getMaySetATM())
-            System.out.println("В этот офис нельзя добавить банкомат");
-        if (office.getBank() == null)
-            System.out.println("Офис не принадлежит ни одному банку");
-        if (bankATM.getBankOffice() != null)
-            System.out.println("Банкомат установлен в другом банке");
-        if (!Objects.equals(bankATM.getBank(), office.getBank()))
-            System.out.println("Банкомат и офис принадлежат разным банкам");
-        else {
-
-            ArrayList<BankATM> array;
-            if (office.getBankATMS() == null) {
-                array = new ArrayList<>();
-            } else {
-                array = office.getBankATMS();
-            }
-            array.add(bankATM);
-            office.setBankATMS(array);
-            bankATM.setBankOffice(office);
-        }
-
+    public BankOffice getBankDtoOfficeById(int id) {
+        return getBankOfficeById(id);
     }
 
-    @Override
-    public void deleteATM(BankOffice office, BankATM bankATM) {
-        if (!Objects.equals(bankATM.getBankOffice(),office))
-            return;
-        ArrayList<BankATM> array = office.getBankATMS();
-        array.remove(bankATM);
-        if (array.isEmpty())
-            office.setBankATMS(null);
-        else
-            office.setBankATMS(array);
-        bankATM.setBankOffice(null);
+    /**
+     * Чтение всех офисов банка.
+     *
+     * @return Список всех офисов банка.
+     */
+    public List<BankOffice> getAllBankOffices() {
+        return bankOfficeRepository.findAll();
     }
 
-    @Override
-    public void addEmployee(BankOffice office, Employee employee){
-        if (!Objects.equals(employee.getBank(), office.getBank()))
-            System.out.println("Сотрудник работает в другом банке");
-
-        if (!employee.getDistantWork())
-            System.out.println("Сотрудник работает удалённо");
-
-        if (employee.getBankOffice() != null)
-            System.out.println("Сотрудник работает в другом офисе");
-        else {
-
-            EmployeeServiceImpl employeeService = new EmployeeServiceImpl();
-            ArrayList<Employee> array;
-            if (office.getEmployees() == null) {
-                array = new ArrayList<>();
-                array.add(employee);
-            } else {
-                array = office.getEmployees();
-                array.add(employee);
-            }
-            office.setEmployees(array);
-            employeeService.toOfficeWork(employee);
-            employee.setBankOffice(office);
-        }
+    /**
+     * Обновление информации об офисе банка по его идентификатору.
+     *
+     * @param id   Идентификатор офиса банка.
+     * @param name Новое название офиса банка.
+     */
+    public BankOffice updateBankOffice(int id, String name) {
+        BankOffice bankOffice = getBankOfficeById(id);
+        bankOffice.setName(name);
+        return bankOfficeRepository.save(bankOffice);
     }
 
-    @Override
-    public void deleteEmployee(BankOffice office, Employee employee){
-        if (!Objects.equals(employee.getBankOffice(),office))
-            return;
-        EmployeeServiceImpl employeeService = new EmployeeServiceImpl();
-        ArrayList<Employee> array = office.getEmployees();
-        array.remove(employee);
-        if (array.isEmpty())
-            office.setBankATMS(null);
-        else
-            office.setEmployees(array);
-
-        employeeService.toDistantWork(employee);
-        employee.setBankOffice(null);
+    /**
+     * Удаление офиса банка по его идентификатору
+     *
+     * @param id Идентификатор офиса банка.
+     */
+    public void deleteBankAtm(int id) {
+        bankOfficeRepository.deleteById(id);
     }
 }

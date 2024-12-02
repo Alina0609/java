@@ -1,55 +1,101 @@
 package tech.reliab.course.grinchenkoas.bank.service.impl;
 
-import tech.reliab.course.grinchenkoas.bank.entity.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import tech.reliab.course.grinchenkoas.bank.entity.User;
+import tech.reliab.course.grinchenkoas.bank.model.UserRequest;
+import tech.reliab.course.grinchenkoas.bank.repository.UserRepository;
 import tech.reliab.course.grinchenkoas.bank.service.UserService;
 
-import java.util.Date;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
-
+@Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Override
-    public User create(Integer id, String name, String surname, Date birthday, String work) {
-        return new User(id, name, surname, birthday, work);
+    private static final int MONTHLY_INCOME_BOUND = 10001;
+    private static final double DIVIDER = 1000.0;
+    private static final int FACTOR = 100;
+
+    private final UserRepository userRepository;
+
+    /**
+     * Создание нового пользователя.
+     *
+     * @param userRequest содержит данные пользователя
+     * @return Созданный пользователь.
+     */
+    public User createUser(UserRequest userRequest) {
+        User user = new User(userRequest.getFullName(), userRequest.getBirthDate(), userRequest.getJob());
+        user.setMonthlyIncome(generateMonthlyIncome());
+        user.setCreditRating(generateCreditRating(user.getMonthlyIncome()));
+        return userRepository.save(user);
     }
 
-    @Override
-    public void changeWork(User user, String newWork, Double newMonthSalary) {
-        user.setWork(newWork);
-        user.setMonthSalary(newMonthSalary);
-        int creditRating = 0;
-        int startRat = 0;
-        int endRat = 1000;
-        while ((startRat != 10000) && (creditRating == 0)) {
-            if ((newMonthSalary <= endRat) && (newMonthSalary >= startRat))
-                creditRating = endRat / 10;
-            else {
-                startRat += 1000;
-                endRat += 1000;
-            }
-        }
-        user.setCreditRating(creditRating);
+    /**
+     * Генерация случайного месячного дохода пользователя.
+     *
+     * @return Случайный месячный доход.
+     */
+    private int generateMonthlyIncome() {
+        return new Random().nextInt(MONTHLY_INCOME_BOUND);
     }
 
-    @Override
-    public String getInfo(User user){
-        String res = "";
-
-        res += user.toString();
-
-        res += "\n\nИнформация о платёжных счётах:\n";
-        for (PaymentAccount paymentAccount: user.getPaymentAccounts()){
-            res += paymentAccount.toString();
-            res += "\n\n";
-        }
-
-        res += "\n\nИнформация о кредитных счётах:\n";
-        for (CreditAccount creditAccount: user.getCreditAccounts()){
-            res += creditAccount.toString();
-            res += "\n\n";
-        }
-        return res;
+    /**
+     * Генерация кредитного рейтинга пользователя,
+     * основанного на его месячном доходе.
+     *
+     * @param monthlyIncome Месячный доход пользователя.
+     * @return Кредитный рейтинг пользователя.
+     */
+    private int generateCreditRating(double monthlyIncome) {
+        return (int) Math.ceil(monthlyIncome / DIVIDER) * FACTOR;
     }
 
+    /**
+     * Чтение пользователя по его идентификатору.
+     *
+     * @param id Идентификатор пользователя.
+     * @return Пользователь, если он найден
+     * @throws NoSuchElementException Если пользователь не найден.
+     */
+    public User getUserById(int id) {
+        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User was not found"));
+    }
 
+    public User getUserDtoById(int id) {
+        return getUserById(id);
+    }
+
+    /**
+     * Чтение всех пользователей.
+     *
+     * @return Список всех пользователей.
+     */
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    /**
+     * Обновление информации о пользователе по его идентификатору.
+     *
+     * @param id   Идентификатор пользователя.
+     * @param name Новое имя пользователя.
+     */
+    public User updateUser(int id, String name) {
+        User user = getUserById(id);
+        user.setFullName(name);
+        return userRepository.save(user);
+    }
+
+    /**
+     * Удаление пользователя по его идентификатору.
+     *
+     * @param id Идентификатор пользователя.
+     */
+    public void deleteUser(int id) {
+        userRepository.deleteById(id);
+    }
 }

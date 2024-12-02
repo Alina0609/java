@@ -1,22 +1,21 @@
 package tech.reliab.course.grinchenkoas.bank.service;
 
-import tech.reliab.course.grinchenkoas.bank.entity.*;
+import tech.reliab.course.grinchenkoas.bank.entity.CreditAccount;
+import tech.reliab.course.grinchenkoas.bank.model.CreditAccountRequest;
 
-import java.time.LocalDate;
+import java.util.List;
 
 public interface CreditAccountService {
-    /*Создать кредитный аккаунт*/
-    CreditAccount create(Integer id, User user, Bank bank, Employee employee, PaymentAccount paymentAccount,
-                         LocalDate startDate, Integer countMonth, Double amount);
 
+    CreditAccount createCreditAccount(CreditAccountRequest creditAccountRequest);
 
-    /*Одобрение заявки на кредит. В случае одобрения, если выбранный сотрудник совпадает с сотрудником,
-     * фактически оформляющим кредит, если банк имеет достаточную сумму для выдачи кредита и если выбранный
-     * сотрудник может оформлять кредиты, то на платёжный счёт пользователя поступает запрошенная сумма, а
-     * из банка списывается указанная в заявке сумма. В случае оформления возвращается true, иначе false.*/
-    void openCredit(Integer id, User user,BankOffice bankOffice, Employee employee,
-                       LocalDate startDate, Integer countMonth, Double amount);
+    CreditAccount getCreditAccountById(int id);
 
-    /*Закрыть кредит*/
-    void closeCredit(User user, CreditAccount creditAccount, LocalDate ourDate);
+    CreditAccount getCreditAccountDtoById(int id);
+
+    List<CreditAccount> getAllCreditAccounts();
+
+    CreditAccount updateCreditAccount(int id, int bankId);
+
+    void deleteCreditAccount(int id);
 }

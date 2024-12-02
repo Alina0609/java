@@ -1,93 +1,83 @@
 package tech.reliab.course.grinchenkoas.bank.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.util.ArrayList;
+import java.util.List;
 
+@ToString
+@Entity
+@Builder
 @Getter
 @Setter
-public class BankOffice{
-    private Integer id;
-    private String name;
-    private Bank bank;
-    private String address;
-    private Boolean status;
-    private Boolean maySetATM;
-    private ArrayList<BankATM> bankATMS;
-    private ArrayList<Employee> employees;
-    private Boolean mayApplyCredit;
-    private Boolean mayWithdrawMoney;
-    private Boolean mayDepositMoney;
-    private Double money;
-    private Double rentCost;
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "bank_offices")
+public class BankOffice {
 
-    public BankOffice( Integer id, String name, String address, Boolean status,
-                       Double rentCost) {
-        this.id = id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BankOfficeStatus status;
+
+    @Column(nullable = false)
+    private boolean canPlaceAtm;
+
+    @Column(nullable = false)
+    private boolean canIssueLoan;
+
+    @Column(nullable = false)
+    private boolean cashWithdrawal;
+
+    @Column(nullable = false)
+    private boolean cashDeposit;
+
+    @Column(nullable = false)
+    private double officeMoney;
+
+    @Column(nullable = false)
+    private double rentCost;
+
+    @OneToMany(mappedBy = "location")
+    private List<BankAtm> atms;
+
+    @ManyToOne
+    private Bank bank;
+
+    @OneToMany(mappedBy = "bankOffice")
+    private List<Employee> employees;
+
+    public BankOffice(String name, String address, boolean canPlaceAtm, boolean canIssueLoan, boolean cashWithdrawal, boolean cashDeposit, double rentCost, Bank bank) {
         this.name = name;
         this.address = address;
-        this.status = status;
-        this.maySetATM = true;
-        this.bankATMS = new ArrayList<>();
-        this.employees = new ArrayList<>();
-        this.mayDepositMoney = true;
-        this.mayApplyCredit = true;
-        this.mayWithdrawMoney = true;
-        this.money = 0.0D;
+        this.canPlaceAtm = canPlaceAtm;
+        this.canIssueLoan = canIssueLoan;
+        this.cashWithdrawal = cashWithdrawal;
+        this.cashDeposit = cashDeposit;
         this.rentCost = rentCost;
-    }
-
-
-    @Override
-    public String toString() {
-        String str =  "\nBankOffice \nНазвание офиса: " + name +
-                "\nБанк: " + bank.getName() +
-                "\nАдрес: " + address +
-                "\nСтатус: ";
-        if (status){
-            str+= "работает";
-        }
-        else{
-            str+= "не работает";
-        }
-        if (maySetATM){
-            str += "\nМожно размещать банкоматы";
-        }
-        else{
-            str += "\nНельзя размещать банкоматы";
-        }
-
-        if (maySetATM){
-            str += "\nКоличество банкоматов: " + bankATMS.size();
-        }
-
-        str += "\nКоличество сотрудников: " + getEmployees().size();
-
-        if (mayWithdrawMoney){
-            str += "\nРаботает на выдачу денег";
-        }
-        else{
-            str += "\nНе работает на выдачу денег";
-        }
-
-        if (mayDepositMoney){
-            str += "\nМожно внести деньги";
-        }
-        else{
-            str += "\nНельзя внести деньги";
-        }
-        str += "\nДенежная сумма: " + String.format("%.2f",money) +
-                "\nАрендная плата: " + String.format("%.2f",rentCost);
-
-        return str;
-    }
-
-    public void addBankATMS(BankATM bankATM) {
-        this.bankATMS.add(bankATM);
-    }
-
-    public void addEmployees(Employee employee) {
-        this.employees.add(employee);
+        this.bank = bank;
     }
 }

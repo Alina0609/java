@@ -1,33 +1,21 @@
 package tech.reliab.course.grinchenkoas.bank.service;
 
-import tech.reliab.course.grinchenkoas.bank.entity.BankATM;
 import tech.reliab.course.grinchenkoas.bank.entity.BankOffice;
-import tech.reliab.course.grinchenkoas.bank.entity.Employee;
+import tech.reliab.course.grinchenkoas.bank.model.BankOfficeRequest;
+
+import java.util.List;
 
 public interface BankOfficeService {
-    /*Создание банковского офиса*/
-    BankOffice create(Integer id, String name, String address, Boolean status,
-                      Double rentCost);
 
-    /*Добавление суммы денег в офис, и, соответственно, добавление суммы денег в банк,
-    которому принадлежит данный офис*/
-    void addMoney(BankOffice office, Double sumMoney);
-    /*Вычитание суммы денег из офиса, и, соответственно, вычитание суммы денег из банка, которому принадлежит
-     * данный офис, с проверкой того, достаточно ли денег в офисе, чтобы их вычесть. Если не достаточно, то
-     * возвращается false, иначе true*/
-    void subtractMoney(BankOffice office, Double sumMoney);
+    BankOffice createBankOffice(BankOfficeRequest bankOfficeRequest);
 
-    /*Добавление нового банкомата в офис, и, соответственно, добавление нового банкомата в банк, которому
-     * принадлежит данный офис, с проверкой того, можно ли добавить в этот офис новый банкомат.
-     * Если нельзя достаточно, то возвращается false, иначе true*/
-    void addATM(BankOffice office, BankATM bankATM);
+    BankOffice getBankOfficeById(int id);
 
-    /*Вычитание банкомата из офиса, и, соответственно, вычитание банкомата из банка, которому
-     * принадлежит данный офис, если указанный банкомат принадлежит офису*/
-    void deleteATM(BankOffice office, BankATM bankATM);
+    BankOffice getBankDtoOfficeById(int id);
 
-    void addEmployee(BankOffice office, Employee employee);
+    List<BankOffice> getAllBankOffices();
 
-    void deleteEmployee(BankOffice office, Employee employee);
+    BankOffice updateBankOffice(int id, String name);
 
+    void deleteBankAtm(int id);
 }

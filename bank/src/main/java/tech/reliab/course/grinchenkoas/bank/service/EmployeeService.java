@@ -1,27 +1,21 @@
 package tech.reliab.course.grinchenkoas.bank.service;
 
-import tech.reliab.course.grinchenkoas.bank.entity.BankATM;
 import tech.reliab.course.grinchenkoas.bank.entity.Employee;
+import tech.reliab.course.grinchenkoas.bank.model.EmployeeRequest;
 
-import java.util.Date;
+import java.util.List;
 
 public interface EmployeeService {
-    /*Создание сотрудника банка*/
-    Employee create(Integer id, String name, String surname, Date birthday, String job, Double salary);
 
-    /*Отправка работника на удалённую работу*/
-    void toDistantWork(Employee employee);
+    Employee createEmployee(EmployeeRequest employeeRequest);
 
-    /*Отправка работника на работу в офисе*/
-    void toOfficeWork(Employee employee);
+    Employee getEmployeeDtoById(int id);
 
-    /*Разрешить или запретить выдавать кредиты*/
-    void permissionForCredit(Employee employee, Boolean flag);
+    Employee getEmployeeById(int id);
 
-    /*Направить работника обслуживать банкомат*/
-    void setWorkerToBankomat(BankATM bankATM, Employee employee);
+    List<Employee> getAllEmployees();
 
-    /*Прекратить чтобы сотрудник обслуживал банкомат*/
-    void removeWorkerFromBankomat(BankATM bankATM, Employee employee);
+    Employee updateEmployee(int id, String name);
 
+    void deleteEmployee(int id);
 }
