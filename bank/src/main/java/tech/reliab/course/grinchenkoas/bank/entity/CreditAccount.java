@@ -63,6 +63,7 @@ public class CreditAccount {
         this.bank = bank;
         this.startDate = startDate;
         this.loanTermMonths = loanTermMonths;
+        this.endDate = startDate.plusMonths(loanTermMonths);
         this.interestRate = interestRate;
         this.employee = employee;
         this.paymentAccount = paymentAccount;

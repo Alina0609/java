@@ -64,6 +64,7 @@ public class BankAtm {
     public BankAtm(String name, String address, Bank bank, BankOffice location, Employee employee, boolean cashWithdrawal, boolean cashDeposit, double maintenanceCost) {
         this.name = name;
         this.address = address;
+        this.status = BankAtmStatus.WORKING;
         this.bank = bank;
         this.location = location;
         this.employee = employee;

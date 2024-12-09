@@ -73,6 +73,7 @@ public class BankOffice {
     public BankOffice(String name, String address, boolean canPlaceAtm, boolean canIssueLoan, boolean cashWithdrawal, boolean cashDeposit, double rentCost, Bank bank) {
         this.name = name;
         this.address = address;
+        this.status = BankOfficeStatus.WORKING;
         this.canPlaceAtm = canPlaceAtm;
         this.canIssueLoan = canIssueLoan;
         this.cashWithdrawal = cashWithdrawal;
